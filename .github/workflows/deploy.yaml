@@ -12,8 +12,7 @@ on:
   # workflow_run:
   #     workflows: ["Test cyberforce build process"]
   #     types:
-  #       - completed
-  
+  #       - completed 
   workflow_dispatch:
 
 jobs:
