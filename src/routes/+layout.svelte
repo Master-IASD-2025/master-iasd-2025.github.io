@@ -21,23 +21,25 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <ModeWatcher defaultMode="dark" />
 
-<div class="relative flex min-h-screen flex-col">
+<div class="relative flex min-h-screen flex-col bg-background">
   <header
-    class="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur"
+    class="bg-background/80 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full backdrop-blur-xl border-b border-border/40"
   >
-    <div class="container mx-auto flex h-14 items-center px-4">
-      <div class="mr-4 flex">
-        <a href="/" class="mr-6 flex items-center space-x-2">
-          <GraduationCap class="h-6 w-6" />
-          <span class="hidden font-bold sm:inline-block"> IASD Community </span>
+    <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+      <div class="flex items-center gap-8">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+            <GraduationCap class="h-5 w-5 text-primary" />
+          </div>
+          <span class="hidden font-semibold tracking-tight sm:inline-block text-foreground">
+            IASD Community
+          </span>
         </a>
-        <nav
-          class="flex items-center space-x-6 text-sm font-medium max-md:hidden"
-        >
+        <nav class="hidden md:flex items-center gap-1">
           {#each navItems as item}
             <a
               href={item.href}
-              class="hover:text-foreground/80 text-foreground/60 transition-colors"
+              class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/50 transition-colors"
             >
               {item.label}
             </a>
@@ -45,24 +47,25 @@
         </nav>
       </div>
 
-      <div class="flex flex-1 items-center justify-end space-x-2">
-        <nav class="flex items-center space-x-1">
+      <div class="flex items-center gap-1">
+        <nav class="flex items-center gap-1">
           <Button
             href="https://github.com/Master-IASD-2025"
             target="_blank"
             rel="noreferrer"
             variant="ghost"
             size="icon"
+            class="rounded-lg hover:bg-muted/50"
           >
-            <Github class="h-4 w-4" />
+            <Github class="h-[1.1rem] w-[1.1rem]" />
             <span class="sr-only">GitHub</span>
           </Button>
-          <Button onclick={toggleMode} variant="ghost" size="icon">
+          <Button onclick={toggleMode} variant="ghost" size="icon" class="rounded-lg hover:bg-muted/50">
             <Sun
-              class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+              class="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0"
             />
             <Moon
-              class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+              class="absolute h-[1.1rem] w-[1.1rem] rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100"
             />
             <span class="sr-only">Toggle theme</span>
           </Button>
