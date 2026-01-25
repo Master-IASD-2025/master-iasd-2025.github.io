@@ -48,7 +48,7 @@
       <div class="flex flex-1 items-center justify-end space-x-2">
         <nav class="flex items-center space-x-1">
           <Button
-            href="https://github.com/geeksblabla"
+            href="https://github.com/Master-IASD-2025"
             target="_blank"
             rel="noreferrer"
             variant="ghost"
