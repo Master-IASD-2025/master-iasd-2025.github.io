@@ -6,19 +6,25 @@
 
   let html = $state("");
 
-  onMount(() => {
+  onMount(async () => {
     // Configure marked for better rendering
     marked.setOptions({
       breaks: true,
       gfm: true,
     });
 
-    html = marked(content);
+    const result = marked(content);
+    html = typeof result === "string" ? result : await result;
   });
 
   $effect(() => {
     if (content) {
-      html = marked(content);
+      const result = marked(content);
+      if (typeof result === "string") {
+        html = result;
+      } else {
+        result.then((h) => (html = h));
+      }
     }
   });
 </script>

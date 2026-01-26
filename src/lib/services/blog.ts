@@ -55,7 +55,7 @@ export async function fetchBlogIndex(): Promise<BlogIndex> {
         const parsed = JSON.parse(cached);
         if (parsed.version === CACHE_VERSION) {
           indexCache = parsed.data;
-          return indexCache;
+          return indexCache as BlogIndex;
         }
       } catch (e) {
         console.warn("Failed to parse cached blog index", e);

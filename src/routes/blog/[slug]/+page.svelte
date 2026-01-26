@@ -21,6 +21,17 @@
   } from "@lucide/svelte";
 
   let post = $state<BlogPost | null>(null);
+
+  const metadata = $derived({
+    title: post
+      ? `${post.title} - Master IASD Blog`
+      : "Blog Post - Master IASD",
+    description:
+      post?.excerpt || "Read this article from the Master IASD community blog.",
+    keywords: post?.tags?.join(", ") || "AI, data science, machine learning",
+    author: post?.author || "Master IASD",
+    publishedDate: post?.date || "",
+  });
   let content = $state("");
   let isLoadingMetadata = $state(true);
   let isLoadingContent = $state(false);

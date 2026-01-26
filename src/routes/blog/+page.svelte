@@ -19,14 +19,17 @@
     type BlogPost,
   } from "$lib/services/blog";
 
+  const metadata = {
+    title: "Blog - Master IASD FSTT",
+    description: "Read the latest articles on AI, machine learning, data science, and research from the Master IASD community. Technical insights, tutorials, and project showcases.",
+    keywords: "AI blog, machine learning tutorials, data science articles, IASD research, tech blog",
+  };
+
   let posts = $state<BlogPost[]>([]);
   let isLoading = $state(true);
   let error = $state<string | null>(null);
 
-  const categories = $derived(() => {
-    const cats = ["All", ...new Set(posts.map((p) => p.category))];
-    return cats;
-  });
+  const categories = $derived(["All", ...new Set(posts.map((p) => p.category))]);
 
   let selectedCategory = $state("All");
   let searchQuery = $state("");
@@ -53,6 +56,18 @@
     }
   });
 </script>
+
+<svelte:head>
+  <title>{metadata.title}</title>
+  <meta name="description" content={metadata.description} />
+  <meta name="keywords" content={metadata.keywords} />
+  <meta property="og:title" content={metadata.title} />
+  <meta property="og:description" content={metadata.description} />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={metadata.title} />
+  <meta name="twitter:description" content={metadata.description} />
+</svelte:head>
 
 <div class="flex min-h-screen flex-col">
   <!-- Hero Section -->

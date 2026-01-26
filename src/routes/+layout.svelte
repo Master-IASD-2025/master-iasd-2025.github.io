@@ -22,7 +22,7 @@
 <div class="flex min-h-screen flex-col bg-background font-sans antialiased">
   <!-- Navigation -->
   <header
-    class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80"
+    class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl supports-backdrop-filter:bg-background/80"
   >
     <nav
       class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
@@ -62,17 +62,17 @@
           rel="noopener noreferrer"
           class="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
         >
-          <Github class="h-[18px] w-[18px]" />
+          <Github class="h-4.5 w-4.5" />
         </a>
         <button
           onclick={toggleMode}
           class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
         >
           <Sun
-            class="h-[18px] w-[18px] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+            class="h-4.5 w-4.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
           />
           <Moon
-            class="absolute h-[18px] w-[18px] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+            class="absolute h-4.5 w-4.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
           />
           <span class="sr-only">Toggle theme</span>
         </button>

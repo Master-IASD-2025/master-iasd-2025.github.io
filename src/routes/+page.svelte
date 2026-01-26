@@ -18,6 +18,12 @@
     Heart,
   } from "@lucide/svelte";
 
+  const metadata = {
+    title: "Master IASD FSTT - AI & Data Science Community",
+    description: "Join the Master IASD community at FSTT. Explore cutting-edge research, collaborate on AI projects, and advance your skills in artificial intelligence and data science.",
+    keywords: "Master IASD, FSTT, AI, Data Science, Machine Learning, Research, Morocco, Tangier",
+  };
+
   const projects = [
     {
       title: "ML Pipeline Framework",
@@ -89,13 +95,25 @@
   ];
 </script>
 
+<svelte:head>
+  <title>{metadata.title}</title>
+  <meta name="description" content={metadata.description} />
+  <meta name="keywords" content={metadata.keywords} />
+  <meta property="og:title" content={metadata.title} />
+  <meta property="og:description" content={metadata.description} />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={metadata.title} />
+  <meta name="twitter:description" content={metadata.description} />
+</svelte:head>
+
 <div class="flex min-h-screen flex-col">
   <!-- Hero Section -->
   <section class="relative overflow-hidden py-28 md:py-36 lg:py-48">
     <!-- Background glow effects -->
     <div class="pointer-events-none absolute inset-0 -z-10">
       <div
-        class="absolute left-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[140px]"
+        class="absolute left-1/4 top-1/3 h-125 w-125 rounded-full bg-primary/10 blur-[140px]"
       ></div>
       <div
         class="absolute bottom-1/3 right-1/4 h-80 w-80 rounded-full bg-primary/5 blur-[100px]"
@@ -125,7 +143,7 @@
           <span class="text-foreground">AI & Data Science</span>
           <br />
           <span
-            class="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent"
+            class="bg-clip-text text-primary"
             >Community</span
           >
         </h1>
@@ -234,7 +252,7 @@
                   <span>{project.contributors} contributors</span>
                 </div>
                 <a
-                  href="#"
+                  href="/projects"
                   class="flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
                 >
                   <Github class="h-4 w-4" />
