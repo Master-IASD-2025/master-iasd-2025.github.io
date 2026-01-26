@@ -9,86 +9,24 @@
     Search,
     Tag,
     User,
+    AlertCircle,
+    Loader2,
   } from "@lucide/svelte";
+  import { onMount } from "svelte";
+  import {
+    getPublishedPosts,
+    formatDate,
+    type BlogPost,
+  } from "$lib/services/blog";
 
-  const posts = [
-    {
-      title: "Getting Started with Machine Learning Pipelines",
-      excerpt:
-        "Learn how to build production-ready ML pipelines using modern tools and best practices. We cover data preprocessing, model training, and deployment strategies.",
-      author: "Sarah Bennani",
-      date: "2026-01-20",
-      readTime: "8 min read",
-      category: "Machine Learning",
-      tags: ["ML", "Python", "MLOps"],
-      featured: true,
-    },
-    {
-      title: "Natural Language Processing for Moroccan Darija",
-      excerpt:
-        "Exploring the challenges and opportunities in building NLP models for Moroccan Arabic dialect. A deep dive into our research project.",
-      author: "Youssef Alami",
-      date: "2026-01-15",
-      readTime: "12 min read",
-      category: "Research",
-      tags: ["NLP", "Darija", "Research"],
-      featured: true,
-    },
-    {
-      title: "Data Visualization Best Practices",
-      excerpt:
-        "Create compelling and insightful data visualizations that tell a story. Tips and techniques from our data science team.",
-      author: "Fatima Zahra",
-      date: "2026-01-10",
-      readTime: "6 min read",
-      category: "Data Science",
-      tags: ["Visualization", "Python", "D3.js"],
-      featured: false,
-    },
-    {
-      title: "Building Scalable AI Systems",
-      excerpt:
-        "Architecture patterns and infrastructure considerations for deploying AI systems at scale. Lessons learned from production deployments.",
-      author: "Ahmed El Idrissi",
-      date: "2026-01-05",
-      readTime: "10 min read",
-      category: "Engineering",
-      tags: ["Architecture", "DevOps", "AI"],
-      featured: false,
-    },
-    {
-      title: "Computer Vision: From Theory to Practice",
-      excerpt:
-        "A practical guide to implementing computer vision solutions. We walk through real-world examples and code implementations.",
-      author: "Imane Chakir",
-      date: "2025-12-28",
-      readTime: "15 min read",
-      category: "Computer Vision",
-      tags: ["CV", "PyTorch", "Deep Learning"],
-      featured: false,
-    },
-    {
-      title: "Contributing to Open Source AI Projects",
-      excerpt:
-        "How to get started with open source contributions in the AI space. A beginner's guide with practical tips and resources.",
-      author: "Mehdi Tazi",
-      date: "2025-12-20",
-      readTime: "7 min read",
-      category: "Community",
-      tags: ["Open Source", "Git", "Collaboration"],
-      featured: false,
-    },
-  ];
+  let posts = $state<BlogPost[]>([]);
+  let isLoading = $state(true);
+  let error = $state<string | null>(null);
 
-  const categories = [
-    "All",
-    "Machine Learning",
-    "Research",
-    "Data Science",
-    "Engineering",
-    "Computer Vision",
-    "Community",
-  ];
+  const categories = $derived(() => {
+    const cats = ["All", ...new Set(posts.map((p) => p.category))];
+    return cats;
+  });
 
   let selectedCategory = $state("All");
   let searchQuery = $state("");
@@ -105,14 +43,15 @@
     });
   });
 
-  function formatDate(dateString: string) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
+  onMount(async () => {
+    try {
+      posts = await getPublishedPosts();
+      isLoading = false;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Failed to load blog posts";
+      isLoading = false;
+    }
+  });
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -179,7 +118,24 @@
   <!-- Blog Posts -->
   <section class="py-20 md:py-28">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      {#if filteredPosts().length === 0}
+      {#if isLoading}
+        <div class="flex flex-col items-center justify-center py-20">
+          <Loader2 class="h-12 w-12 animate-spin text-primary" />
+          <p class="mt-4 text-lg text-muted-foreground">Loading articles...</p>
+        </div>
+      {:else if error}
+        <div class="flex flex-col items-center justify-center py-20">
+          <AlertCircle class="h-12 w-12 text-destructive" />
+          <p class="mt-4 text-lg text-muted-foreground">{error}</p>
+          <Button
+            onclick={() => window.location.reload()}
+            variant="outline"
+            class="mt-6"
+          >
+            Try Again
+          </Button>
+        </div>
+      {:else if filteredPosts().length === 0}
         <div class="py-20 text-center">
           <p class="text-lg text-muted-foreground">
             No articles found. Try adjusting your search or filter.
@@ -231,10 +187,12 @@
                           <span>{formatDate(post.date)}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" class="gap-1.5">
-                        Read More
-                        <ArrowRight class="h-3.5 w-3.5" />
-                      </Button>
+                      <a href="/blog/{post.slug}">
+                        <Button variant="ghost" size="sm" class="gap-1.5">
+                          Read More
+                          <ArrowRight class="h-3.5 w-3.5" />
+                        </Button>
+                      </a>
                     </div>
                   </Card.Footer>
                 </Card.Root>
@@ -289,10 +247,12 @@
                       <Clock class="h-4 w-4" />
                       <span>{post.readTime}</span>
                     </div>
-                    <Button variant="ghost" size="sm" class="gap-1.5">
-                      Read
-                      <ArrowRight class="h-3.5 w-3.5" />
-                    </Button>
+                    <a href="/blog/{post.slug}">
+                      <Button variant="ghost" size="sm" class="gap-1.5">
+                        Read
+                        <ArrowRight class="h-3.5 w-3.5" />
+                      </Button>
+                    </a>
                   </div>
                 </Card.Footer>
               </Card.Root>
