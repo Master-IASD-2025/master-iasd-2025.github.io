@@ -21,15 +21,20 @@
 
   const metadata = {
     title: "Blog - Master IASD FSTT",
-    description: "Read the latest articles on AI, machine learning, data science, and research from the Master IASD community. Technical insights, tutorials, and project showcases.",
-    keywords: "AI blog, machine learning tutorials, data science articles, IASD research, tech blog",
+    description:
+      "Read the latest articles on AI, machine learning, data science, and research from the Master IASD community. Technical insights, tutorials, and project showcases.",
+    keywords:
+      "AI blog, machine learning tutorials, data science articles, IASD research, tech blog",
   };
 
   let posts = $state<BlogPost[]>([]);
   let isLoading = $state(true);
   let error = $state<string | null>(null);
 
-  const categories = $derived(["All", ...new Set(posts.map((p) => p.category))]);
+  const categories = $derived([
+    "All",
+    ...new Set(posts.map((p) => p.category)),
+  ]);
 
   let selectedCategory = $state("All");
   let searchQuery = $state("");

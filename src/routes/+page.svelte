@@ -20,8 +20,10 @@
 
   const metadata = {
     title: "Master IASD FSTT - AI & Data Science Community",
-    description: "Join the Master IASD community at FSTT. Explore cutting-edge research, collaborate on AI projects, and advance your skills in artificial intelligence and data science.",
-    keywords: "Master IASD, FSTT, AI, Data Science, Machine Learning, Research, Morocco, Tangier",
+    description:
+      "Join the Master IASD community at FSTT. Explore cutting-edge research, collaborate on AI projects, and advance your skills in artificial intelligence and data science.",
+    keywords:
+      "Master IASD, FSTT, AI, Data Science, Machine Learning, Research, Morocco, Tangier",
   };
 
   const projects = [
@@ -142,10 +144,7 @@
         >
           <span class="text-foreground">AI & Data Science</span>
           <br />
-          <span
-            class="bg-clip-text text-primary"
-            >Community</span
-          >
+          <span class="bg-clip-text text-primary">Community</span>
         </h1>
 
         <!-- Description -->
