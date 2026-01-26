@@ -1,0 +1,134 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  # Test build on all pushes and PRs
+  test-build:
+    name: Test Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Type check
+        run: bun run check
+
+      - name: Build
+        run: bun run build
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 1
+
+  # Deploy only on push to master/main after successful build
+  deploy:
+    name: Deploy to Production
+    needs: test-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    
+    # Only trigger deployment if core components changed
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for core component changes
+        id: check-changes
+        run: |
+          # Define core component paths
+          CORE_PATHS="src/lib/components src/lib/services src/routes/+layout.svelte src/routes/+page.svelte src/routes/blog src/routes/layout.css svelte.config.js vite.config.ts package.json"
+          
+          # Check if any core files changed
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          
+          CORE_CHANGED=false
+          for path in $CORE_PATHS; do
+            if echo "$CHANGED_FILES" | grep -q "^$path"; then
+              CORE_CHANGED=true
+              echo "Core component changed: $path"
+              break
+            fi
+          done
+          
+          echo "core_changed=$CORE_CHANGED" >> $GITHUB_OUTPUT
+          
+          if [ "$CORE_CHANGED" = true ]; then
+            echo "🚀 Core components changed - deployment will proceed"
+          else
+            echo "ℹ️ No core components changed - skipping deployment"
+          fi
+
+      - name: Download build artifacts
+        if: steps.check-changes.outputs.core_changed == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build/
+
+      - name: Deploy to Vercel
+        if: steps.check-changes.outputs.core_changed == 'true'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+
+      - name: Deploy to Netlify
+        if: steps.check-changes.outputs.core_changed == 'true' && secrets.NETLIFY_AUTH_TOKEN != ''
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './build'
+          production-branch: master
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions - ${{ github.event.head_commit.message }}"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
+
+      - name: Deployment Summary
+        if: steps.check-changes.outputs.core_changed == 'true'
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Build successful" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployed to production" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.event.head_commit.message }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the logs for more details." >> $GITHUB_STEP_SUMMARY
